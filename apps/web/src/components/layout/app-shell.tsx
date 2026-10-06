@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import {
   ReactNode,
@@ -10,6 +10,7 @@ import {
   LoaderCircle,
   LogOut,
   Menu,
+  Trophy,
   UserRound,
   X,
 } from "lucide-react";
@@ -36,34 +37,26 @@ export function AppShell({
   eyebrow: string;
   title: string;
   description: string;
-  children:
-    ReactNode;
+  children: ReactNode;
 }) {
-  const router =
-    useRouter();
+  const router = useRouter();
 
   const [
     loggingOut,
     setLoggingOut,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   const [
     mobileMenu,
     setMobileMenu,
-  ] =
-    useState(false);
+  ] = useState(false);
 
   async function handleLogout() {
-    if (
-      loggingOut
-    ) {
+    if (loggingOut) {
       return;
     }
 
-    setLoggingOut(
-      true,
-    );
+    setLoggingOut(true);
 
     try {
       await logout();
@@ -71,10 +64,7 @@ export function AppShell({
       // Even if API logout fails,
       // login page will re-check the session.
     } finally {
-      router.replace(
-        "/login",
-      );
-
+      router.replace("/login");
       router.refresh();
     }
   }
@@ -110,32 +100,34 @@ export function AppShell({
               </p>
 
               <p className="mt-1 text-[11px] text-white/45">
-                {ROLE_LABEL[
-                  user.role
-                ]}
+                {ROLE_LABEL[user.role]}
               </p>
             </div>
           </div>
         </div>
 
-        <nav className="px-4">
+        <nav className="space-y-2 px-4">
           <div className="flex h-12 items-center gap-3 rounded-2xl bg-emerald-300/10 px-4 text-sm font-black text-emerald-50">
             <LayoutDashboard className="size-[18px]" />
             نمای اصلی
           </div>
+
+          <a
+            href="/leaderboard"
+            className="flex h-12 items-center gap-3 rounded-2xl px-4 text-sm font-bold text-white/65 transition hover:bg-white/[.06] hover:text-white"
+          >
+            <Trophy className="size-[18px]" />
+            بهترین‌های ماه
+          </a>
         </nav>
 
         <div className="mt-auto p-4">
           <button
             type="button"
-            onClick={
-              () => {
-                void handleLogout();
-              }
-            }
-            disabled={
-              loggingOut
-            }
+            onClick={() => {
+              void handleLogout();
+            }}
+            disabled={loggingOut}
             className="flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-white/10 bg-white/[.04] text-sm font-bold text-white/70 transition hover:bg-white/[.08] hover:text-white disabled:opacity-50"
           >
             {loggingOut ? (
@@ -154,12 +146,7 @@ export function AppShell({
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              onClick={
-                () =>
-                  setMobileMenu(
-                    true,
-                  )
-              }
+              onClick={() => setMobileMenu(true)}
               className="flex size-10 items-center justify-center rounded-xl border border-[var(--line)] bg-white lg:hidden"
               aria-label="باز کردن منو"
             >
@@ -184,9 +171,7 @@ export function AppShell({
               </p>
 
               <p className="mt-1 text-[10px] text-[var(--muted)]">
-                {ROLE_LABEL[
-                  user.role
-                ]}
+                {ROLE_LABEL[user.role]}
               </p>
             </div>
           </div>
@@ -204,21 +189,20 @@ export function AppShell({
 
         <div className="fixed inset-x-3 bottom-3 z-30 rounded-[22px] border border-[var(--line)] bg-white/95 p-2 shadow-[0_15px_45px_rgba(15,23,42,.12)] backdrop-blur-xl lg:hidden">
           <div className="grid grid-cols-2 gap-2">
-            <div className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] text-xs font-black text-white">
-              <LayoutDashboard className="size-4" />
-              پنل من
-            </div>
+            <a
+              href="/leaderboard"
+              className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--brand)] text-xs font-black text-white"
+            >
+              <Trophy className="size-4" />
+              بهترین‌های ماه
+            </a>
 
             <button
               type="button"
-              onClick={
-                () => {
-                  void handleLogout();
-                }
-              }
-              disabled={
-                loggingOut
-              }
+              onClick={() => {
+                void handleLogout();
+              }}
+              disabled={loggingOut}
               className="flex h-12 items-center justify-center gap-2 rounded-2xl bg-[var(--surface-soft)] text-xs font-black text-[var(--muted)]"
             >
               {loggingOut ? (
@@ -238,12 +222,7 @@ export function AppShell({
           <button
             type="button"
             aria-label="بستن منو"
-            onClick={
-              () =>
-                setMobileMenu(
-                  false,
-                )
-            }
+            onClick={() => setMobileMenu(false)}
             className="absolute inset-0 bg-slate-950/35 backdrop-blur-sm"
           />
 
@@ -267,12 +246,7 @@ export function AppShell({
 
               <button
                 type="button"
-                onClick={
-                  () =>
-                    setMobileMenu(
-                      false,
-                    )
-                }
+                onClick={() => setMobileMenu(false)}
                 className="flex size-9 items-center justify-center rounded-xl bg-white/10"
               >
                 <X className="size-4" />
@@ -285,9 +259,7 @@ export function AppShell({
               </p>
 
               <p className="mt-1 text-xs text-white/45">
-                {ROLE_LABEL[
-                  user.role
-                ]}
+                {ROLE_LABEL[user.role]}
               </p>
             </div>
 
@@ -295,6 +267,15 @@ export function AppShell({
               <LayoutDashboard className="size-[18px]" />
               نمای اصلی
             </div>
+
+            <a
+              href="/leaderboard"
+              onClick={() => setMobileMenu(false)}
+              className="mt-2 flex h-12 items-center gap-3 rounded-2xl px-4 text-sm font-bold text-white/65 transition hover:bg-white/[.06] hover:text-white"
+            >
+              <Trophy className="size-[18px]" />
+              بهترین‌های ماه
+            </a>
           </div>
         </div>
       )}
