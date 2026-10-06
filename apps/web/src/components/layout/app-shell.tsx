@@ -89,7 +89,7 @@ export function AppShell({
 
           <div>
             <p className="text-sm font-black">
-              تولیدی باقری
+              تولیدی هایسن
             </p>
 
             <p className="mt-1 text-[11px] text-white/45">
@@ -256,7 +256,7 @@ export function AppShell({
 
                 <div>
                   <p className="text-sm font-black">
-                    تولیدی باقری
+                    تولیدی هایسن
                   </p>
 
                   <p className="mt-1 text-[10px] text-white/40">

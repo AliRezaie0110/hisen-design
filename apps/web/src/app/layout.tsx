@@ -12,12 +12,12 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: {
     default:
-      "تولیدی باقری",
+      "تولیدی هایسن",
     template:
-      "%s | تولیدی باقری",
+      "%s | تولیدی هایسن",
   },
   description:
-    "سامانه مدیریت تولید، پرسنل و حسابداری تولیدی باقری",
+    "سامانه مدیریت تولید، پرسنل و حسابداری تولیدی هایسن",
 };
 
 export const viewport: Viewport = {

@@ -27,7 +27,7 @@ export function LoginScreen() {
 
             <div>
               <h2 className="text-lg font-black">
-                تولیدی باقری
+                تولیدی هایسن
               </h2>
 
               <p className="mt-0.5 text-xs text-white/55">
@@ -105,7 +105,7 @@ export function LoginScreen() {
 
               <div>
                 <p className="text-sm font-black">
-                  تولیدی باقری
+                  تولیدی هایسن
                 </p>
 
                 <p className="mt-1 text-[11px] text-white/50">

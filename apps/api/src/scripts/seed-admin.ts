@@ -30,7 +30,7 @@ async function main(): Promise<void> {
 
   const fullName =
     process.env.ADMIN_NAME?.trim() ||
-    'مدیر تولیدی باقری';
+    'مدیر تولیدی هایسن';
 
   if (!databaseUrl) {
     throw new Error(

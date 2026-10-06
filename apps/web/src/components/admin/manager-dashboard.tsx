@@ -203,7 +203,7 @@ export function ManagerDashboard({
         <section>
           <div className="overflow-hidden rounded-[28px] bg-[#102827] p-6 text-white sm:p-8">
             <p className="text-xs font-black text-emerald-200/70">
-              مدیریت تولیدی باقری
+              مدیریت تولیدی هایسن
             </p>
 
             <h2 className="mt-2 text-2xl font-black sm:text-3xl">
