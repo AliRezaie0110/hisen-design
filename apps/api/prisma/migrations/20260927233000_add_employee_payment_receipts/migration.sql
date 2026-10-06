@@ -1,0 +1,5 @@
+ALTER TABLE "EmployeePayment"
+ADD COLUMN "paymentMethod" VARCHAR(30) NOT NULL DEFAULT 'CARD_TO_CARD',
+ADD COLUMN "receiptFileName" VARCHAR(255),
+ADD COLUMN "receiptOriginalName" VARCHAR(255),
+ADD COLUMN "receiptMimeType" VARCHAR(100);

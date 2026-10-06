@@ -1,0 +1,377 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserRole {
+  MANAGER
+  SUPERVISOR
+  ASSISTANT
+  WORKER
+}
+
+enum CompensationType {
+  NONE
+  PIECE_RATE
+  FIXED_MONTHLY
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum BatchStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  ARCHIVED
+}
+
+enum OwnerPricingType {
+  PER_PIECE
+  FIXED_TOTAL
+}
+
+model User {
+  id                   String           @id @default(cuid())
+  phone                String           @unique @db.VarChar(20)
+  fullName             String
+  role                 UserRole
+  compensationType     CompensationType
+  isActive             Boolean          @default(true)
+  defaultMonthlySalary Decimal?         @db.Decimal(18, 0)
+  phoneVerifiedAt      DateTime?
+
+  profileTitle             String? @db.VarChar(100)
+  profileBio               String? @db.VarChar(500)
+  profilePhotoFileName     String? @db.VarChar(255)
+  profilePhotoOriginalName String? @db.VarChar(255)
+  profilePhotoMimeType     String? @db.VarChar(100)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  otpCodes     OtpCode[]
+  authSessions AuthSession[]
+
+  workEntries         WorkEntry[] @relation("WorkerEntries")
+  reviewedWorkEntries WorkEntry[] @relation("WorkEntryReviewer")
+
+  timeEntries         TimeEntry[] @relation("EmployeeTimeEntries")
+  reviewedTimeEntries TimeEntry[] @relation("TimeEntryReviewer")
+
+  monthlySalaries MonthlySalary[]
+
+  employeePayments         EmployeePayment[] @relation("EmployeePayments")
+  recordedEmployeePayments EmployeePayment[] @relation("EmployeePaymentRecorder")
+
+  recordedOwnerPayments OwnerPayment[] @relation("OwnerPaymentRecorder")
+
+  auditLogs AuditLog[] @relation("AuditActor")
+
+  @@index([role])
+  @@index([isActive])
+}
+
+model OtpCode {
+  id       String @id @default(cuid())
+  userId   String
+  codeHash String
+
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([expiresAt])
+}
+
+model AuthSession {
+  id        String @id @default(cuid())
+  userId    String
+  tokenHash String @unique
+
+  expiresAt  DateTime
+  revokedAt  DateTime?
+  lastSeenAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, revokedAt])
+  @@index([expiresAt])
+}
+
+model Owner {
+  id       String  @id @default(cuid())
+  name     String
+  phone    String? @db.VarChar(20)
+  note     String?
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workBatches WorkBatch[]
+  payments    OwnerPayment[]
+
+  @@index([name])
+  @@index([isActive])
+}
+
+model WorkBatch {
+  id   String @id @default(cuid())
+  code String @unique
+
+  ownerId String
+  owner   Owner  @relation(fields: [ownerId], references: [id])
+
+  modelName     String?
+  totalQuantity Int
+
+  ownerPricingType OwnerPricingType
+  ownerUnitPrice   Decimal?         @db.Decimal(18, 0)
+  ownerFixedAmount Decimal?         @db.Decimal(18, 0)
+
+  status BatchStatus @default(ACTIVE)
+
+  startDate   DateTime? @db.Date
+  completedAt DateTime?
+  note        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  operations    BatchOperation[]
+  sizes         WorkBatchSize[]
+  ownerPayments OwnerPayment[]
+
+  @@index([ownerId, status])
+  @@index([modelName])
+  @@index([startDate])
+}
+
+model Operation {
+  id       String  @id @default(cuid())
+  name     String  @unique
+  isActive Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  rates           OperationRate[]
+  batchOperations BatchOperation[]
+
+  @@index([isActive])
+}
+
+model OperationRate {
+  id            String    @id @default(cuid())
+  operationId   String
+  amount        Decimal   @db.Decimal(18, 0)
+  effectiveFrom DateTime  @db.Date
+  effectiveTo   DateTime? @db.Date
+
+  createdAt DateTime @default(now())
+
+  operation Operation @relation(fields: [operationId], references: [id])
+
+  @@unique([operationId, effectiveFrom])
+  @@index([operationId, effectiveTo])
+}
+
+model BatchOperation {
+  id          String @id @default(cuid())
+  workBatchId String
+  operationId String
+
+  targetQuantity   Int
+  claimedQuantity  Int @default(0)
+  approvedQuantity Int @default(0)
+  unitRate         Decimal @db.Decimal(18, 0)
+  isActive         Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workBatch WorkBatch @relation(fields: [workBatchId], references: [id], onDelete: Cascade)
+  operation Operation @relation(fields: [operationId], references: [id])
+
+  workEntries WorkEntry[]
+
+  @@unique([workBatchId, operationId])
+  @@index([workBatchId])
+  @@index([operationId])
+}
+
+model WorkBatchSize {
+  id          String @id @default(cuid())
+  workBatchId String
+  label       String @db.VarChar(50)
+  quantity    Int
+  sortOrder   Int @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workBatch  WorkBatch   @relation(fields: [workBatchId], references: [id], onDelete: Cascade)
+  workEntries WorkEntry[]
+
+  @@unique([workBatchId, label])
+  @@index([workBatchId, isActive, sortOrder])
+}
+
+model WorkEntry {
+  id               String @id @default(cuid())
+  workerId         String
+  batchOperationId String
+  workBatchSizeId  String
+
+  quantity    Int
+  unitRate    Decimal @db.Decimal(18, 0)
+  totalAmount Decimal @db.Decimal(18, 0)
+
+  status ApprovalStatus @default(PENDING)
+
+  workerNote   String?
+  reviewerNote String?
+
+  reviewedById String?
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  worker         User           @relation("WorkerEntries", fields: [workerId], references: [id])
+  batchOperation BatchOperation @relation(fields: [batchOperationId], references: [id])
+  workBatchSize  WorkBatchSize  @relation(fields: [workBatchSizeId], references: [id])
+  reviewedBy     User?          @relation("WorkEntryReviewer", fields: [reviewedById], references: [id])
+
+  @@index([workerId, createdAt])
+  @@index([batchOperationId, status])
+  @@index([workBatchSizeId, status])
+  @@index([status, createdAt])
+}
+
+model TimeEntry {
+  id         String   @id @default(cuid())
+  employeeId String
+  workDate   DateTime @db.Date
+
+  startedAt     DateTime?
+  endedAt       DateTime?
+  minutesWorked Int
+
+  note String?
+
+  status ApprovalStatus @default(PENDING)
+
+  reviewedById String?
+  reviewerNote String?
+  reviewedAt   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  employee   User  @relation("EmployeeTimeEntries", fields: [employeeId], references: [id])
+  reviewedBy User? @relation("TimeEntryReviewer", fields: [reviewedById], references: [id])
+
+  @@index([employeeId, workDate])
+  @@index([status, workDate])
+}
+
+model MonthlySalary {
+  id     String  @id @default(cuid())
+  userId String
+  year   Int
+  month  Int
+  amount Decimal @db.Decimal(18, 0)
+  note   String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, year, month])
+  @@index([year, month])
+}
+
+model EmployeePayment {
+  id         String  @id @default(cuid())
+  employeeId String
+  amount     Decimal @db.Decimal(18, 0)
+
+  paidAt DateTime
+  note   String?
+
+  paymentMethod       String  @default("CARD_TO_CARD") @db.VarChar(30)
+  receiptFileName     String? @db.VarChar(255)
+  receiptOriginalName String? @db.VarChar(255)
+  receiptMimeType     String? @db.VarChar(100)
+  recordedById String
+
+  createdAt DateTime @default(now())
+
+  employee   User @relation("EmployeePayments", fields: [employeeId], references: [id])
+  recordedBy User @relation("EmployeePaymentRecorder", fields: [recordedById], references: [id])
+
+  @@index([employeeId, paidAt])
+  @@index([paidAt])
+}
+
+model OwnerPayment {
+  id      String @id @default(cuid())
+  ownerId String
+
+  workBatchId String?
+
+  amount Decimal  @db.Decimal(18, 0)
+  paidAt DateTime
+  note   String?
+
+  recordedById String
+
+  createdAt DateTime @default(now())
+
+  owner      Owner      @relation(fields: [ownerId], references: [id])
+  workBatch  WorkBatch? @relation(fields: [workBatchId], references: [id])
+  recordedBy User       @relation("OwnerPaymentRecorder", fields: [recordedById], references: [id])
+
+  @@index([ownerId, paidAt])
+  @@index([workBatchId])
+  @@index([paidAt])
+}
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorId String?
+
+  action     String
+  entityType String
+  entityId   String?
+
+  beforeData Json?
+  afterData  Json?
+  metadata   Json?
+
+  createdAt DateTime @default(now())
+
+  actor User? @relation("AuditActor", fields: [actorId], references: [id])
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}

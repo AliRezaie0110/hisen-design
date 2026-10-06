@@ -1,0 +1,93 @@
+@import "tailwindcss";
+
+:root {
+  --app-bg: #f4f7f7;
+  --surface: #ffffff;
+  --surface-soft: #f7f9f9;
+  --text: #132322;
+  --muted: #687977;
+  --line: #e3e9e8;
+  --line-strong: #d5dfdd;
+
+  --brand: #0d746d;
+  --brand-strong: #095e59;
+  --brand-soft: #e6f5f2;
+
+  --danger: #b42318;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  min-height: 100%;
+  background: var(--app-bg);
+}
+
+body {
+  min-height: 100dvh;
+  margin: 0;
+  background:
+    radial-gradient(
+      circle at 15% 0%,
+      rgba(13, 116, 109, 0.035),
+      transparent 28rem
+    ),
+    var(--app-bg);
+  color: var(--text);
+  font-family:
+    "Vazirmatn",
+    Tahoma,
+    Arial,
+    "Segoe UI",
+    sans-serif;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+::selection {
+  background: rgba(13, 116, 109, 0.16);
+  color: var(--text);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid transparent;
+  border-radius: 999px;
+  background: #cbd6d4;
+  background-clip: padding-box;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
+@media (max-width: 640px) {
+  ::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+}

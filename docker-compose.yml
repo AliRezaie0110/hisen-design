@@ -1,0 +1,16 @@
+﻿services:
+  postgres:
+    image: postgres:16
+    container_name: bagheri-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bagheri
+      POSTGRES_USER: bagheri
+      POSTGRES_PASSWORD: bagheri_local_dev
+    ports:
+      - "5436:5432"
+    volumes:
+      - bagheri_postgres_data:/var/lib/postgresql/data
+
+volumes:
+  bagheri_postgres_data:
