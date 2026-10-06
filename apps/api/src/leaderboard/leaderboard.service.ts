@@ -13,7 +13,9 @@ function getPersianParts(date: Date) {
   ).formatToParts(date);
 
   const value = (type: string) =>
-    Number(parts.find((part) => part.type === type)?.value);
+    Number(
+      parts.find((part) => part.type === type)?.value,
+    );
 
   return {
     year: value('year'),
@@ -26,7 +28,9 @@ function findPersianMonthStart(
   year: number,
   month: number,
 ) {
-  const approximateYear = 2020 + (year - 1399);
+  const approximateYear =
+    2020 + (year - 1399);
+
   const approximate = Date.UTC(
     approximateYear,
     2,
@@ -39,10 +43,12 @@ function findPersianMonthStart(
     offset += 1
   ) {
     const date = new Date(
-      approximate + offset * 86400000,
+      approximate +
+        offset * 86400000,
     );
 
-    const parts = getPersianParts(date);
+    const parts =
+      getPersianParts(date);
 
     if (
       parts.year === year &&
@@ -64,11 +70,15 @@ export class LeaderboardService {
     private readonly prisma: PrismaService,
   ) {}
 
-  async monthly(month: number, year: number) {
-    const start = findPersianMonthStart(
-      year,
-      month,
-    );
+  async monthly(
+    month: number,
+    year: number,
+  ) {
+    const start =
+      findPersianMonthStart(
+        year,
+        month,
+      );
 
     const nextMonth =
       month === 12
@@ -88,8 +98,8 @@ export class LeaderboardService {
         },
         select: {
           id: true,
-          firstName: true,
-          lastName: true,
+          fullName: true,
+          profilePhotoFileName: true,
         },
       });
 
@@ -119,14 +129,14 @@ export class LeaderboardService {
       .map((worker) => ({
         workerId: worker.id,
         name:
-          [
-            worker.firstName,
-            worker.lastName,
-          ]
-            .filter(Boolean)
-            .join(' ') || 'بدون نام',
+          worker.fullName ||
+          'بدون نام',
         approvedWorks:
           countMap.get(worker.id) ?? 0,
+        photoUrl:
+          worker.profilePhotoFileName
+            ? `/profile/photo/${worker.id}`
+            : null,
       }))
       .sort(
         (a, b) =>

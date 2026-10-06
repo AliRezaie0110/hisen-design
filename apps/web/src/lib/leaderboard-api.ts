@@ -4,6 +4,7 @@ export type LeaderboardEntry = {
   workerId: string;
   name: string;
   approvedWorks: number;
+  photoUrl: string | null;
   rank: number;
 };
 

@@ -16,6 +16,9 @@ import {
   AppShell,
 } from "@/components/layout/app-shell";
 import {
+  ProfileAvatar,
+} from "@/components/profile/profile-avatar";
+import {
   getCurrentUser,
 } from "@/lib/api";
 import {
@@ -274,6 +277,14 @@ export default function LeaderboardPage() {
                         entry.rank
                       )}
                     </div>
+
+                    <ProfileAvatar
+                      userId={entry.workerId}
+                      hasPhoto={Boolean(
+                        entry.photoUrl,
+                      )}
+                      className="size-12 rounded-2xl"
+                    />
 
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-black">
