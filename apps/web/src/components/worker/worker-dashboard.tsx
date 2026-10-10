@@ -2314,6 +2314,27 @@ export function WorkerDashboard({
           )}
         </>
       )}
+      <footer className="mt-10 border-t border-[var(--line)] pb-3 pt-6">
+        <div className="flex flex-col items-center gap-2 text-center">
+          <p className="text-[10px] font-bold tracking-wide text-[var(--muted)]">
+            توسعه و طراحی سامانه
+          </p>
+          <a
+            href="https://www.instagram.com/Alirezaie2022/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-full border border-[var(--line)] bg-white px-5 py-2 text-sm font-black text-[var(--brand)] shadow-sm transition hover:-translate-y-0.5 hover:border-[var(--brand)] hover:shadow-md"
+          >
+            Alirezaie
+          </a>
+          <p className="text-[11px] text-[var(--muted)]">
+            طراحی و توسعه نرم‌افزار
+          </p>
+          <p dir="ltr" className="pt-1 text-[10px] text-[var(--muted)]">
+            © 2026 Hisen Design · All rights reserved
+          </p>
+        </div>
+      </footer>
     </AppShell>
   );
 }
