@@ -1120,6 +1120,132 @@ export class WorkEntriesService {
     return base;
   }
 
+  async undoApproval(
+    reviewerId: string,
+    id: string,
+  ) {
+    return this.prisma.$transaction(
+      async (tx) => {
+        const lockedEntry =
+          await tx.$queryRaw<
+            Array<{ id: string }>
+          >`
+            SELECT "id"
+            FROM "WorkEntry"
+            WHERE "id" = ${id}
+            FOR UPDATE
+          `;
+
+        if (lockedEntry.length !== 1) {
+          throw new NotFoundException({
+            code: 'WORK_ENTRY_NOT_FOUND',
+            message: 'ثبت کار پیدا نشد.',
+          });
+        }
+
+        const entry =
+          await tx.workEntry.findUnique({
+            where: { id },
+          });
+
+        if (!entry) {
+          throw new NotFoundException({
+            code: 'WORK_ENTRY_NOT_FOUND',
+            message: 'ثبت کار پیدا نشد.',
+          });
+        }
+
+        if (entry.status !== ApprovalStatus.APPROVED) {
+          throw new ConflictException({
+            code: 'WORK_ENTRY_NOT_APPROVED',
+            message: 'فقط ثبت کار تأییدشده را می‌توان برگرداند.',
+          });
+        }
+
+        await tx.$queryRaw<
+          Array<{ id: string }>
+        >`
+          SELECT "id"
+          FROM "BatchOperation"
+          WHERE "id" = ${entry.batchOperationId}
+          FOR UPDATE
+        `;
+
+        const batchOperation =
+          await tx.batchOperation.findUnique({
+            where: { id: entry.batchOperationId },
+          });
+
+        if (!batchOperation) {
+          throw new NotFoundException({
+            code: 'BATCH_OPERATION_NOT_FOUND',
+            message: 'عملیات سری‌کار پیدا نشد.',
+          });
+        }
+
+        if (
+          batchOperation.claimedQuantity < entry.quantity ||
+          batchOperation.approvedQuantity < entry.quantity
+        ) {
+          throw new ConflictException({
+            code: 'WORK_QUANTITY_INCONSISTENT',
+            message: 'شمارنده‌های سری‌کار با ثبت تأییدشده سازگار نیستند؛ هیچ تغییری اعمال نشد.',
+          });
+        }
+
+        const marker = 'تأیید برگشت‌خورده توسط مدیر';
+
+        const updated =
+          await tx.workEntry.update({
+            where: { id },
+            data: {
+              status: ApprovalStatus.REJECTED,
+              reviewerNote: marker,
+              reviewedById: reviewerId,
+              reviewedAt: new Date(),
+            },
+          });
+
+        await tx.batchOperation.update({
+          where: { id: entry.batchOperationId },
+          data: {
+            approvedQuantity: {
+              decrement: entry.quantity,
+            },
+            claimedQuantity: {
+              decrement: entry.quantity,
+            },
+          },
+        });
+
+        await tx.auditLog.create({
+          data: {
+            actorId: reviewerId,
+            action: 'WORK_ENTRY_APPROVAL_REVOKED',
+            entityType: 'WorkEntry',
+            entityId: entry.id,
+            beforeData: {
+              status: ApprovalStatus.APPROVED,
+              quantity: entry.quantity,
+            },
+            afterData: {
+              status: ApprovalStatus.REJECTED,
+              quantity: entry.quantity,
+              reviewerNote: marker,
+            },
+          },
+        });
+
+        return {
+          id: updated.id,
+          status: updated.status,
+          reviewerNote: updated.reviewerNote,
+          reviewedAt: updated.reviewedAt?.toISOString() ?? null,
+        };
+      },
+    );
+  }
+
   async reject(
     reviewerId: string,
     reviewerRole: string,

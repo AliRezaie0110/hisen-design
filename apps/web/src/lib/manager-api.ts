@@ -1263,6 +1263,17 @@ export function reviewWorkEntry(
   );
 }
 
+export function undoWorkEntryApproval(
+  id: string,
+): Promise<unknown> {
+  return apiFetch(
+    `/work-entries/${id}/undo-approval`,
+    {
+      method: "POST",
+    },
+  );
+}
+
 export function listPendingTimeEntries(): Promise<PendingTimeEntriesResponse> {
   return apiFetch<PendingTimeEntriesResponse>(
     "/time-entries/pending",

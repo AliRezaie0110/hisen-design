@@ -106,6 +106,20 @@ export class WorkEntriesController {
     );
   }
 
+  @Post(':id/undo-approval')
+  @Roles(UserRole.MANAGER)
+  undoApproval(
+    @CurrentUser()
+    actor: AuthenticatedUser,
+    @Param('id')
+    id: string,
+  ) {
+    return this.workEntries.undoApproval(
+      actor.id,
+      id,
+    );
+  }
+
   @Post(':id/reject')
   @Roles(
     UserRole.SUPERVISOR,

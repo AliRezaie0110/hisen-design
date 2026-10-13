@@ -10,6 +10,7 @@ import {
   History,
   LoaderCircle,
   RefreshCw,
+  RotateCcw,
   Search,
   UsersRound,
 } from "lucide-react";
@@ -33,6 +34,7 @@ import {
   getEmployeeReport,
   getOwnerReport,
   getWorkHistoryReport,
+  undoWorkEntryApproval,
   listBatches,
   listEmployeeAccounts,
   listOperations,
@@ -1348,6 +1350,7 @@ function WorkHistoryReports() {
 
   const [loading, setLoading] = useState(true);
   const [downloading, setDownloading] = useState(false);
+  const [undoingEntryId, setUndoingEntryId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   const selectedBatch =
@@ -1481,6 +1484,32 @@ function WorkHistoryReports() {
       setError(managerError(caught));
     } finally {
       setDownloading(false);
+    }
+  }
+
+  async function undoApproval(item: WorkHistoryResponse["items"][number]) {
+    if (item.status !== "APPROVED" || undoingEntryId !== null) {
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `تأیید ثبت کار ${item.employeeName} به تعداد ${item.quantity} برگردانده شود؟ این عمل مبلغ تأییدشده و ظرفیت سری‌کار را اصلاح می‌کند.`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    setUndoingEntryId(item.id);
+    setError(null);
+
+    try {
+      await undoWorkEntryApproval(item.id);
+      await load(filters);
+    } catch (caught) {
+      setError(managerError(caught));
+    } finally {
+      setUndoingEntryId(null);
     }
   }
 
@@ -1738,6 +1767,7 @@ function WorkHistoryReports() {
                       <Th>وضعیت</Th>
                       <Th>تأییدکننده</Th>
                       <Th>زمان تأیید</Th>
+                      <Th>عملیات</Th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-[var(--line)] text-xs">
@@ -1783,11 +1813,32 @@ function WorkHistoryReports() {
                               ? "تأییدشده"
                               : item.status === "PENDING"
                                 ? "در انتظار"
-                                : "ردشده"}
+                                : item.reviewerNote === "تأیید برگشت‌خورده توسط مدیر"
+                                  ? "تأیید برگشت‌خورده"
+                                  : "ردشده"}
                           </span>
                         </Td>
                         <Td>{item.reviewer?.fullName ?? "—"}</Td>
                         <Td>{date(item.reviewedAt)}</Td>
+                        <Td>
+                          {item.status === "APPROVED" ? (
+                            <button
+                              type="button"
+                              disabled={undoingEntryId !== null}
+                              onClick={() => void undoApproval(item)}
+                              className="inline-flex items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-black text-amber-800 transition hover:bg-amber-100 disabled:cursor-not-allowed disabled:opacity-50"
+                            >
+                              {undoingEntryId === item.id ? (
+                                <LoaderCircle className="size-3.5 animate-spin" />
+                              ) : (
+                                <RotateCcw className="size-3.5" />
+                              )}
+                              برگرداندن تأیید
+                            </button>
+                          ) : (
+                            <span className="text-[10px] text-[var(--muted)]">—</span>
+                          )}
+                        </Td>
                       </tr>
                     ))}
                   </tbody>

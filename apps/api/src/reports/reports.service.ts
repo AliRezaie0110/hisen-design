@@ -33,7 +33,7 @@ export class ReportsService {
   constructor(
     private readonly prisma:
       PrismaService,
-  ) {}
+  ) { }
 
   private jalaliExcelDate(
     value: string,
@@ -133,8 +133,8 @@ export class ReportsService {
   private money(
     value:
       | {
-          toString(): string;
-        }
+        toString(): string;
+      }
       | string
       | number
       | null
@@ -183,13 +183,13 @@ export class ReportsService {
     const start =
       from
         ? this.parseDate(
-            from,
-          )
+          from,
+        )
         : null;
 
     let endExclusive:
       Date | null =
-        null;
+      null;
 
     if (to) {
       const end =
@@ -200,7 +200,7 @@ export class ReportsService {
       endExclusive =
         new Date(
           end.getTime() +
-            24 * 60 * 60 * 1000,
+          24 * 60 * 60 * 1000,
         );
     }
 
@@ -208,7 +208,7 @@ export class ReportsService {
       start &&
       endExclusive &&
       start.getTime() >=
-        endExclusive.getTime()
+      endExclusive.getTime()
     ) {
       throw new BadRequestException({
         code:
@@ -231,7 +231,7 @@ export class ReportsService {
     if (
       range.start &&
       date.getTime() <
-        range.start.getTime()
+      range.start.getTime()
     ) {
       return false;
     }
@@ -239,7 +239,7 @@ export class ReportsService {
     if (
       range.endExclusive &&
       date.getTime() >=
-        range.endExclusive.getTime()
+      range.endExclusive.getTime()
     ) {
       return false;
     }
@@ -280,7 +280,7 @@ export class ReportsService {
     if (
       range.endExclusive &&
       monthStart.getTime() >=
-        range.endExclusive.getTime()
+      range.endExclusive.getTime()
     ) {
       return false;
     }
@@ -288,7 +288,7 @@ export class ReportsService {
     if (
       range.start &&
       nextMonth.getTime() <=
-        range.start.getTime()
+      range.start.getTime()
     ) {
       return false;
     }
@@ -334,23 +334,23 @@ export class ReportsService {
   ): string {
     return type ===
       OwnerPricingType.PER_PIECE
-        ? 'دانه‌ای'
-        : 'مبلغ ثابت';
+      ? 'دانه‌ای'
+      : 'مبلغ ثابت';
   }
 
   private batchDue(
     batch: {
       totalQuantity: number;
       ownerPricingType:
-        OwnerPricingType;
+      OwnerPricingType;
       ownerUnitPrice:
-        {
-          toString(): string;
-        } | null;
+      {
+        toString(): string;
+      } | null;
       ownerFixedAmount:
-        {
-          toString(): string;
-        } | null;
+      {
+        toString(): string;
+      } | null;
     },
   ): bigint {
     if (
@@ -379,11 +379,11 @@ export class ReportsService {
   ): number | string {
     const big =
       typeof value ===
-      'bigint'
+        'bigint'
         ? value
         : BigInt(
-            value,
-          );
+          value,
+        );
 
     const max =
       BigInt(
@@ -1114,15 +1114,15 @@ export class ReportsService {
       where.batchOperation = {
         ...(query.workBatchId
           ? {
-              workBatchId:
-                query.workBatchId,
-            }
+            workBatchId:
+              query.workBatchId,
+          }
           : {}),
         ...(query.operationId
           ? {
-              operationId:
-                query.operationId,
-            }
+            operationId:
+              query.operationId,
+          }
           : {}),
       };
     }
@@ -1134,15 +1134,15 @@ export class ReportsService {
       where.createdAt = {
         ...(range.start
           ? {
-              gte:
-                range.start,
-            }
+            gte:
+              range.start,
+          }
           : {}),
         ...(range.endExclusive
           ? {
-              lt:
-                range.endExclusive,
-            }
+            lt:
+              range.endExclusive,
+          }
           : {}),
       };
     }
@@ -1285,11 +1285,11 @@ export class ReportsService {
             reviewer:
               entry.reviewedBy
                 ? {
-                    id:
-                      entry.reviewedBy.id,
-                    fullName:
-                      entry.reviewedBy.fullName,
-                  }
+                  id:
+                    entry.reviewedBy.id,
+                  fullName:
+                    entry.reviewedBy.fullName,
+                }
                 : null,
             reviewedAt:
               entry.reviewedAt
@@ -1697,9 +1697,10 @@ export class ReportsService {
             item.totalAmount,
           ),
         status:
-          statusLabel(
-            item.status,
-          ),
+          item.status === ApprovalStatus.REJECTED &&
+            item.reviewerNote === 'تأیید برگشت‌خورده توسط مدیر'
+            ? 'تأیید برگشت‌خورده'
+            : statusLabel(item.status),
         reviewer:
           item.reviewer
             ?.fullName ??
@@ -1942,7 +1943,7 @@ export class ReportsService {
             if (
               query.workBatchId &&
               batch.id !==
-                query.workBatchId
+              query.workBatchId
             ) {
               return false;
             }
@@ -1962,7 +1963,7 @@ export class ReportsService {
             if (
               query.status &&
               batch.status !==
-                query.status
+              query.status
             ) {
               return false;
             }
@@ -2003,7 +2004,7 @@ export class ReportsService {
             ) {
               return (
                 payment.workBatchId !==
-                  null &&
+                null &&
                 matchingIds.has(
                   payment.workBatchId,
                 )
@@ -2017,7 +2018,7 @@ export class ReportsService {
       if (
         hasBatchFilter &&
         matchingBatches.length ===
-          0
+        0
       ) {
         continue;
       }
@@ -2029,9 +2030,9 @@ export class ReportsService {
         ) &&
         !hasBatchFilter &&
         matchingBatches.length ===
-          0 &&
+        0 &&
         matchingPayments.length ===
-          0
+        0
       ) {
         continue;
       }
@@ -2570,69 +2571,69 @@ export class ReportsService {
 
     const detailedWorkEntries =
       employeeIds.length ===
-      0
+        0
         ? []
         : await this.prisma.workEntry.findMany({
-            where: {
-              workerId: {
-                in:
-                  employeeIds,
-              },
-              ...(reportRange.start ||
-              reportRange.endExclusive
-                ? {
-                    createdAt: {
-                      ...(reportRange.start
-                        ? {
-                            gte:
-                              reportRange.start,
-                          }
-                        : {}),
-                      ...(reportRange.endExclusive
-                        ? {
-                            lt:
-                              reportRange.endExclusive,
-                          }
-                        : {}),
-                    },
-                  }
-                : {}),
+          where: {
+            workerId: {
+              in:
+                employeeIds,
             },
-            include: {
-              worker: {
-                select: {
-                  fullName:
-                    true,
-                  phone:
-                    true,
+            ...(reportRange.start ||
+              reportRange.endExclusive
+              ? {
+                createdAt: {
+                  ...(reportRange.start
+                    ? {
+                      gte:
+                        reportRange.start,
+                    }
+                    : {}),
+                  ...(reportRange.endExclusive
+                    ? {
+                      lt:
+                        reportRange.endExclusive,
+                    }
+                    : {}),
                 },
+              }
+              : {}),
+          },
+          include: {
+            worker: {
+              select: {
+                fullName:
+                  true,
+                phone:
+                  true,
               },
-              reviewedBy: {
-                select: {
-                  fullName:
-                    true,
-                },
+            },
+            reviewedBy: {
+              select: {
+                fullName:
+                  true,
               },
-              workBatchSize:
-                true,
-              batchOperation: {
-                include: {
-                  operation:
-                    true,
-                  workBatch: {
-                    include: {
-                      owner:
-                        true,
-                    },
+            },
+            workBatchSize:
+              true,
+            batchOperation: {
+              include: {
+                operation:
+                  true,
+                workBatch: {
+                  include: {
+                    owner:
+                      true,
                   },
                 },
               },
             },
-            orderBy: {
-              createdAt:
-                'desc',
-            },
-          });
+          },
+          orderBy: {
+            createdAt:
+              'desc',
+          },
+        });
 
     const operationsSheet =
       workbook.addWorksheet(
@@ -2793,13 +2794,14 @@ export class ReportsService {
               .toString(),
           ),
         status:
-          entry.status ===
-          ApprovalStatus.APPROVED
-            ? 'تأییدشده'
-            : entry.status ===
-                ApprovalStatus.PENDING
-              ? 'در انتظار'
-              : 'ردشده',
+          entry.status === ApprovalStatus.REJECTED &&
+            entry.reviewerNote === 'تأیید برگشت‌خورده توسط مدیر'
+            ? 'تأیید برگشت‌خورده'
+            : entry.status === ApprovalStatus.APPROVED
+              ? 'تأییدشده'
+              : entry.status === ApprovalStatus.PENDING
+                ? 'در انتظار'
+                : 'ردشده',
         reviewer:
           entry.reviewedBy
             ?.fullName ??
@@ -3337,18 +3339,18 @@ export class ReportsService {
           batch.ownerPricingLabel,
         unitPrice:
           batch.ownerUnitPrice ===
-          null
+            null
             ? null
             : this.excelValue(
-                batch.ownerUnitPrice,
-              ),
+              batch.ownerUnitPrice,
+            ),
         fixedAmount:
           batch.ownerFixedAmount ===
-          null
+            null
             ? null
             : this.excelValue(
-                batch.ownerFixedAmount,
-              ),
+              batch.ownerFixedAmount,
+            ),
         due:
           this.excelValue(
             batch.due,
