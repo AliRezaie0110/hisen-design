@@ -1814,7 +1814,7 @@ function WorkHistoryReports() {
                               : item.status === "PENDING"
                                 ? "در انتظار"
                                 : item.reviewerNote === "تأیید برگشت‌خورده توسط مدیر"
-                                  ? "تأیید برگشت‌خورده"
+                                  ? "برگشت‌خورده"
                                   : "ردشده"}
                           </span>
                         </Td>

@@ -1699,7 +1699,7 @@ export class ReportsService {
         status:
           item.status === ApprovalStatus.REJECTED &&
             item.reviewerNote === 'تأیید برگشت‌خورده توسط مدیر'
-            ? 'تأیید برگشت‌خورده'
+            ? 'برگشت‌خورده'
             : statusLabel(item.status),
         reviewer:
           item.reviewer
@@ -2796,7 +2796,7 @@ export class ReportsService {
         status:
           entry.status === ApprovalStatus.REJECTED &&
             entry.reviewerNote === 'تأیید برگشت‌خورده توسط مدیر'
-            ? 'تأیید برگشت‌خورده'
+            ? 'برگشت‌خورده'
             : entry.status === ApprovalStatus.APPROVED
               ? 'تأییدشده'
               : entry.status === ApprovalStatus.PENDING
