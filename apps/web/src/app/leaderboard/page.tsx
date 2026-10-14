@@ -265,7 +265,8 @@ export default function LeaderboardPage() {
               </p>
             </div>
 
-            <div className="divide-y divide-[var(--line)]">
+            <div className="overflow-x-auto overscroll-x-contain">
+              <div className="min-w-[620px] divide-y divide-[var(--line)]">
               {entries.map((entry) => {
                 const topThree =
                   entry.rank <= 3;
@@ -337,6 +338,7 @@ export default function LeaderboardPage() {
                   </div>
                 );
               })}
+              </div>
             </div>
           </div>
         )}
