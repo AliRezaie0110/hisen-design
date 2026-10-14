@@ -150,8 +150,7 @@ export class LeaderboardService {
       }))
       .sort(
         (a, b) =>
-          b.approvedWorks -
-            a.approvedWorks ||
+          b.workAmount - a.workAmount ||
           a.name.localeCompare(
             b.name,
             'fa',
