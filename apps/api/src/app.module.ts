@@ -50,6 +50,7 @@ import { LeaderboardModule } from './leaderboard/leaderboard.module';
     OwnerAccountsModule,
     ReportsModule,
     ProfileModule,
+    LeaderboardModule,
   ],
   controllers: [
     AppController,
