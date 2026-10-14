@@ -1,9 +1,10 @@
-﻿import { apiFetch } from "@/lib/api";
+import { apiFetch } from "@/lib/api";
 
 export type LeaderboardEntry = {
   workerId: string;
   name: string;
   approvedWorks: number;
+  workAmount: number;
   photoUrl: string | null;
   rank: number;
 };

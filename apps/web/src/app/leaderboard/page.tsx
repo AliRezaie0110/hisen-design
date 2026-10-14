@@ -1,12 +1,14 @@
-﻿"use client";
+"use client";
 
 import {
   useEffect,
   useMemo,
   useState,
 } from "react";
+import Link from "next/link";
 import {
   Crown,
+  House,
   Medal,
   RefreshCw,
   Trophy,
@@ -23,6 +25,7 @@ import {
 } from "@/lib/api";
 import {
   AuthUser,
+  ROLE_HOME,
 } from "@/lib/auth";
 import {
   getMonthlyLeaderboard,
@@ -140,6 +143,16 @@ export default function LeaderboardPage() {
       description="رتبه‌بندی همکاران بر اساس تعداد کارهای تأییدشده در ماه انتخاب‌شده."
     >
       <section className="space-y-5">
+        <div className="flex justify-start">
+          <Link
+            href={ROLE_HOME[user.role]}
+            className="inline-flex min-h-10 items-center gap-2 rounded-xl border border-[var(--line)] bg-white px-4 py-2 text-sm font-bold text-[var(--foreground)] transition hover:bg-[var(--surface-soft)]"
+          >
+            <House className="size-4" />
+            بازگشت به صفحه اصلی
+          </Link>
+        </div>
+
         <div className="flex flex-col gap-4 rounded-[28px] border border-[var(--line)] bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,.05)] sm:flex-row sm:items-center sm:justify-between">
           <div>
             <div className="flex items-center gap-2">
@@ -296,14 +309,30 @@ export default function LeaderboardPage() {
                       </p>
                     </div>
 
-                    <div className="text-left">
-                      <p className="text-lg font-black">
-                        {entry.approvedWorks}
-                      </p>
+                    <div className="flex shrink-0 items-center gap-3 sm:gap-5">
+                      <div className="text-left">
+                        <p className="text-base font-black sm:text-lg">
+                          {new Intl.NumberFormat("fa-IR").format(
+                            entry.approvedWorks,
+                          )}
+                        </p>
 
-                      <p className="mt-0.5 text-[10px] font-bold text-[var(--muted)]">
-                        کار تأییدشده
-                      </p>
+                        <p className="mt-0.5 text-[10px] font-bold text-[var(--muted)]">
+                          کار تأییدشده
+                        </p>
+                      </div>
+
+                      <div className="max-w-[118px] text-left sm:max-w-none">
+                        <p className="text-sm font-black sm:text-base">
+                          {new Intl.NumberFormat("fa-IR").format(
+                            entry.workAmount,
+                          )}
+                        </p>
+
+                        <p className="mt-0.5 text-[10px] font-bold text-[var(--muted)]">
+                          مبلغ کارکرد (تومان)
+                        </p>
+                      </div>
                     </div>
                   </div>
                 );

@@ -1,4 +1,4 @@
-﻿import { Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 
 function getPersianParts(date: Date) {
@@ -116,12 +116,22 @@ export class LeaderboardService {
         _count: {
           _all: true,
         },
+        _sum: {
+          totalAmount: true,
+        },
       });
 
     const countMap = new Map(
       entries.map((entry) => [
         entry.workerId,
         entry._count._all,
+      ]),
+    );
+
+    const amountMap = new Map(
+      entries.map((entry) => [
+        entry.workerId,
+        Number(entry._sum.totalAmount ?? 0),
       ]),
     );
 
@@ -133,6 +143,8 @@ export class LeaderboardService {
           'بدون نام',
         approvedWorks:
           countMap.get(worker.id) ?? 0,
+        workAmount:
+          amountMap.get(worker.id) ?? 0,
         photoUrl:
           worker.profilePhotoFileName
             ? `/profile/photo/${worker.id}`
