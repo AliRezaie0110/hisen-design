@@ -113,10 +113,8 @@ export class LeaderboardService {
             lt: nextMonth,
           },
         },
-        _count: {
-          _all: true,
-        },
         _sum: {
+          quantity: true,
           totalAmount: true,
         },
       });
@@ -124,7 +122,7 @@ export class LeaderboardService {
     const countMap = new Map(
       entries.map((entry) => [
         entry.workerId,
-        entry._count._all,
+        Number(entry._sum.quantity ?? 0),
       ]),
     );
 
