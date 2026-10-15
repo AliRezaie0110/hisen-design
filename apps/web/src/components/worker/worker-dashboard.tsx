@@ -36,6 +36,9 @@ import {
   ProfileSection,
 } from "@/components/profile/profile-section";
 import {
+  ProfileAvatar,
+} from "@/components/profile/profile-avatar";
+import {
   JalaliDateInput,
 } from "@/components/ui/jalali-date-input";
 import {
@@ -1021,14 +1024,24 @@ export function WorkerDashboard({
     >
       <section className="mb-4 overflow-hidden rounded-[26px] bg-[#102827] p-5 text-white shadow-[0_18px_45px_rgba(16,40,39,.14)] sm:p-6">
         <div className="flex items-start justify-between gap-4">
-          <div>
-            <p className="text-xs font-bold text-emerald-200/80">
-              سلام،
-            </p>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-3">
+              <ProfileAvatar
+                userId={user.id}
+                hasPhoto={true}
+                className="!size-14 !shrink-0 !rounded-full border-2 border-white/20"
+              />
 
-            <h2 className="mt-1 text-xl font-black sm:text-2xl">
-              {user.fullName}
-            </h2>
+              <div className="min-w-0">
+                <p className="text-xs font-bold text-emerald-200/80">
+                  سلام،
+                </p>
+
+                <h2 className="mt-1 break-words text-xl font-black sm:text-2xl">
+                  {user.fullName}
+                </h2>
+              </div>
+            </div>
 
             <p className="mt-2 text-xs leading-6 text-white/55">
               وضعیت حساب و کارهای ثبت‌شده شما به‌صورت لحظه‌ای
